@@ -7,7 +7,7 @@ using System.IO;
 
 namespace PingMonitor
 {
-    internal class Pinging
+    public class Pinging
     {
         private List<string> _list = null;
 

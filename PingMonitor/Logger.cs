@@ -7,7 +7,7 @@ using System.IO;
 
 namespace PingMonitor
 {
-    internal class Logger
+    public class Logger
     {
         private string _logPath = null;
 

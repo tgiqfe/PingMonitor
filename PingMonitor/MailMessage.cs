@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace PingMonitor
 {
-    internal class MailMessage
+    public class MailMessage
     {
         public string Server { get; set; }
         public int Port { get; set; }
@@ -39,6 +35,7 @@ namespace PingMonitor
 
 
 /*
+ * サンプル
 MailMessage mail = new MailMessage()
 {
     Server ="smtp.example.com",
