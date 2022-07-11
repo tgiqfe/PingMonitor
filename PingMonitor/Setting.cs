@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace PingMonitor
 {
-    internal class Setting
+    public class Setting
     {
         public string ListPath { get; set; }
         public string LogsPath { get; set; }

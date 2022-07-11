@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PingMonitor
 {
-    internal class ResultCollection
+    public class ResultCollection
     {
         public class Result
         {
@@ -18,6 +18,23 @@ namespace PingMonitor
 
         public List<Result> List { get; set; }
 
-
+        public void Add(string target)
+        {
+            var index = this.List.FindIndex(x => x.Target == target);
+            if (index >= 0)
+            {
+                List[index].LastCheckTime = DateTime.Now;
+                List[index].FailedCount++;
+            }
+            else
+            {
+                List.Add(new Result()
+                {
+                    Target = target,
+                    LastCheckTime = DateTime.Now,
+                    FailedCount = 1,
+                });
+            }
+        }
     }
 }
