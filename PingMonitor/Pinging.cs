@@ -45,17 +45,14 @@ namespace PingMonitor
                     System.Net.NetworkInformation.PingReply reply = ping.Send(target);
                     if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
                     {
-                        //  PIng成功した場合
+                        //  Ping成功した場合
                     }
                     else
                     {
-                        //  PIng失敗した場合
+                        //  Ping失敗した場合
                     }
                 }
             }
-
         }
-
-
     }
 }
