@@ -9,15 +9,30 @@ namespace PingMonitor
 {
     public class Pinging
     {
-        private List<string> _list = null;
+        private Setting _setting = null;
+        private Logger _logger = null;
 
-        public void Check(string listPath, int interval, int count)
+        private List<string> _list = null;
+        private ResultCollection _collection = null;
+
+        public Pinging(Setting setting, Logger logger)
         {
-            LoadListFile(listPath);
-            SendPing(interval, count);
+            this._setting = setting;
+            this._logger = logger;
         }
 
-        public void LoadListFile(string listPath)
+        public void Check()
+        {
+            LoadListFile(_setting.ListPath);
+
+            LoadResultCollection(_setting.LogsPath);
+
+            SendPing(_setting.PingInterval ?? 1000, _setting.PingCount ?? 4);
+
+            SendMail(_setting.MailSmtpServer, _setting.MailSmtpPort ?? 25, _setting.MailTo, _setting.MailFrom);
+        }
+
+        private void LoadListFile(string listPath)
         {
             this._list = new();
             using (var stream = new StreamReader(listPath, Encoding.UTF8))
@@ -34,7 +49,13 @@ namespace PingMonitor
             }
         }
 
-        public void SendPing(int interval, int count)
+        private void LoadResultCollection(string logsPath)
+        {
+            string dbFile = System.IO.Path.Combine(logsPath, "results.json");
+            _collection = ResultCollection.Load(dbFile);
+        }
+
+        private void SendPing(int interval, int count)
         {
             System.Net.NetworkInformation.Ping ping = new();
 
@@ -45,14 +66,26 @@ namespace PingMonitor
                     System.Net.NetworkInformation.PingReply reply = ping.Send(target);
                     if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
                     {
-                        //  Ping成功した場合
+                        _collection.SuccessTarget(target);
                     }
                     else
                     {
-                        //  Ping失敗した場合
+                        _collection.FailTarget(target);
                     }
                 }
             }
+        }
+
+        private void SendMail(string smtpServer, int port, string[] toAddress, string fromAddress)
+        {
+            MailMessage mail = new MailMessage()
+            {
+                Server = smtpServer,
+                Port = port,
+                To = toAddress,
+                From = fromAddress,
+            };
+            
         }
     }
 }

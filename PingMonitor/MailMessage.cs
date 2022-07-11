@@ -8,25 +8,25 @@ namespace PingMonitor
         public int Port { get; set; }
         public string[] To { get; set; }
         public string From { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        //public string UserName { get; set; }
+        //public string Password { get; set; }
 
         public void Send(string subject, string body)
         {
-            var mail = new MimeKit.MimeMessage();
-            mail.From.Add(new MimeKit.MailboxAddress("address1", this.From));
-            this.To.ToList().ForEach(x => mail.To.Add(new MimeKit.MailboxAddress("address2", x)));
-            mail.Subject = subject;
+            var msg = new MimeKit.MimeMessage();
+            msg.From.Add(new MimeKit.MailboxAddress("address1", this.From));
+            this.To.ToList().ForEach(x => msg.To.Add(new MimeKit.MailboxAddress("address2", x)));
+            msg.Subject = subject;
 
             var bodyText = new MimeKit.TextPart("Plain");
             bodyText.Text = body;
-            mail.Body = bodyText;
+            msg.Body = bodyText;
 
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
                 client.Connect(this.Server, this.Port, MailKit.Security.SecureSocketOptions.None);
-                client.Authenticate(this.UserName, this.Password);
-                client.Send(mail);
+                //client.Authenticate(this.UserName, this.Password);
+                client.Send(msg);
                 client.Disconnect(true);
             }
         }

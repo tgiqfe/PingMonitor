@@ -14,7 +14,7 @@ logger.Write("開始");
 logger.Write("テスト");
 
 
-var pinging = new Pinging();
+var pinging = new Pinging(setting, logger);
 //pinging.Check(setting.ListPath);
 
 

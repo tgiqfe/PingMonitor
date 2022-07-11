@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -15,10 +14,10 @@ namespace PingMonitor
         public int? PingInterval { get; set; }
         public int? PingCount { get; set; }
         public int? MaxFailedCount { get; set; }
-        public string SmtpServer { get; set; }
-        public int? SmtpPort { get; set; }
-        public string[] ToAddresses { get; set; }
-        public string FromAddress { get; set; }
+        public string MailSmtpServer { get; set; }
+        public int? MailSmtpPort { get; set; }
+        public string[] MailTo { get; set; }
+        public string MailFrom { get; set; }
 
         private static readonly string[] _falseCandidate = new string[]
         {
@@ -32,10 +31,10 @@ namespace PingMonitor
             this.PingInterval = 1000;
             this.PingCount = 4;
             this.MaxFailedCount = 5;
-            this.SmtpServer = "smtp.example.com";
-            this.SmtpPort = 25;
-            this.ToAddresses = new[] { "alerm@sample.net", "emergency@sample.org" };
-            this.FromAddress = "info@example.com";
+            this.MailSmtpServer = "smtp.example.com";
+            this.MailSmtpPort = 25;
+            this.MailTo = new[] { "alerm@sample.net", "emergency@sample.org" };
+            this.MailFrom = "info@example.com";
         }
 
         public static Setting Load(string settingFile)
@@ -43,7 +42,7 @@ namespace PingMonitor
             Setting setting = null;
             try
             {
-                using (var stream = new StreamReader(settingFile, Encoding.UTF8))
+                using (var stream = new StreamReader(settingFile, System.Text.Encoding.UTF8))
                 using (var reader = new StringReader(stream.ReadToEnd()))
                 {
                     var ret = new Setting();
@@ -101,7 +100,7 @@ namespace PingMonitor
         {
             try
             {
-                using (var stream = new StreamWriter(settingFile, false, Encoding.UTF8))
+                using (var stream = new StreamWriter(settingFile, false, System.Text.Encoding.UTF8))
                 {
                     var props = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                     foreach (var prop in props)
