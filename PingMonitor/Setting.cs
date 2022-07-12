@@ -40,8 +40,8 @@ namespace PingMonitor
             Setting setting = null;
             try
             {
-                using (var stream = new StreamReader(settingFile, System.Text.Encoding.UTF8))
-                using (var reader = new StringReader(stream.ReadToEnd()))
+                using (var stream = new System.IO.StreamReader(settingFile, System.Text.Encoding.UTF8))
+                using (var reader = new System.IO.StringReader(stream.ReadToEnd()))
                 {
                     var ret = new Setting();
                     var props = typeof(Setting).GetProperties(
@@ -101,7 +101,7 @@ namespace PingMonitor
         {
             try
             {
-                using (var stream = new StreamWriter(settingFile, false, System.Text.Encoding.UTF8))
+                using (var stream = new System.IO.StreamWriter(settingFile, false, System.Text.Encoding.UTF8))
                 {
                     var props = this.GetType().GetProperties(
                         System.Reflection.BindingFlags.Instance | 

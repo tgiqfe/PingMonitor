@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace PingMonitor
 {
@@ -13,17 +11,19 @@ namespace PingMonitor
 
         public Logger(string logsDir, string preFileName)
         {
-            if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
+            if (!System.IO.Directory.Exists(logsDir)) System.IO.Directory.CreateDirectory(logsDir);
             string today = DateTime.Now.ToString("yyyyMMdd");
-            _logPath = Path.Combine(logsDir, $"{preFileName}_{today}.log");
+            _logPath = System.IO.Path.Combine(logsDir, $"{preFileName}_{today}.log");
         }
 
         public void Write(LogLevel level, string message)
         {
-            using (var stream = new StreamWriter(_logPath, true, Encoding.UTF8))
+            using (var stream = new System.IO.StreamWriter(_logPath, true, System.Text.Encoding.UTF8))
             {
                 string now = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-                stream.WriteLine($"[{now}]<{level}>{message}");
+                stream.WriteLine($"[{now}]<{level}> {message}");
+
+                //Console.WriteLine($"[{now}]<{level}> {message}");
             }
         }
 

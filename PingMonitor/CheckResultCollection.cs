@@ -22,7 +22,7 @@ namespace PingMonitor
             try
             {
                 collection = System.Text.Json.JsonSerializer.Deserialize<CheckResultCollection>(
-                    File.ReadAllText(dbFile),
+                    System.IO.File.ReadAllText(dbFile),
                     new System.Text.Json.JsonSerializerOptions()
                     {
                         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
@@ -51,7 +51,7 @@ namespace PingMonitor
                     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 });
-                File.WriteAllText(dbFile, json);
+                System.IO.File.WriteAllText(dbFile, json);
             }
             catch { }
         }
