@@ -24,13 +24,13 @@ namespace PingMonitor
             int maxLastCheckTimeLength = "yyyy/MM/dd HH:mm:ss".Length;
 
             sb.AppendLine(
-                "Target".PadRight(maxTargetNameLength) + " " +
+                "Target".PadRight(maxTargetNameLength) + "  " +
                 "LastCheckTime".PadRight(maxLastCheckTimeLength));
-            sb.AppendLine(new string('=', maxTargetNameLength + maxTargetNameLength + 2));
+            sb.AppendLine(new string('=', maxTargetNameLength + maxTargetNameLength + 3));
             foreach (var res in results)
             {
                 sb.AppendLine(
-                    res.Target.PadRight(maxLastCheckTimeLength) + " " +
+                    res.Target.PadRight(maxTargetNameLength) + "  " +
                     res.LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss").PadRight(maxLastCheckTimeLength));
             }
 
@@ -53,19 +53,19 @@ namespace PingMonitor
             int maxLastCheckTimeLength = "yyyy/MM/dd HH:mm:ss".Length;
 
             sb.AppendLine(
-                "Target".PadRight(maxTargetNameLength) + " " +
+                "Target".PadRight(maxTargetNameLength) + "  " +
                 "LastCheckTime".PadRight(maxLastCheckTimeLength));
-            sb.AppendLine(new string('=', maxTargetNameLength + maxTargetNameLength + 2));
+            sb.AppendLine(new string('=', maxTargetNameLength + maxTargetNameLength + 3));
             foreach (var res in results)
             {
                 sb.AppendLine(
-                    res.Target.PadRight(maxLastCheckTimeLength) + " " +
+                    res.Target.PadRight(maxTargetNameLength) + "  " +
                     res.LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss").PadRight(maxLastCheckTimeLength));
             }
 
             template.Body = sb.ToString();
 
-            return null;
+            return template;
         }
     }
 }

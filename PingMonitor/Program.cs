@@ -13,12 +13,8 @@ Logger logger = new Logger(setting.LogsPath, "monitor");
 logger.Write("開始");
 logger.Write("テスト");
 
-
 var pinging = new Pinging(setting, logger);
 pinging.Check();
-
-
-
 
 logger.Write("終了");
 Console.ReadLine();

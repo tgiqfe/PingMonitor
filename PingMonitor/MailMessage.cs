@@ -14,8 +14,8 @@ namespace PingMonitor
         public void Send(string subject, string body)
         {
             var msg = new MimeKit.MimeMessage();
-            msg.From.Add(new MimeKit.MailboxAddress("address1", this.From));
-            this.To.ToList().ForEach(x => msg.To.Add(new MimeKit.MailboxAddress("address2", x)));
+            msg.From.Add(new MimeKit.MailboxAddress(null, this.From));
+            this.To.ToList().ForEach(x => msg.To.Add(new MimeKit.MailboxAddress(null, x)));
             msg.Subject = subject;
 
             var bodyText = new MimeKit.TextPart("Plain");

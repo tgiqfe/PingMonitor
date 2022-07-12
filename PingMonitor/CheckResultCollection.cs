@@ -88,11 +88,18 @@ namespace PingMonitor
 
         public CheckResult[] GetAlertTarget(int maxFailedCount)
         {
-            return Results.Where(x =>
-                (x.FailedCount ?? 0) > maxFailedCount &&
-                (x.IsNotified != true) &&
-                (x.IsRestore != true)).
-                ToArray();
+            var tempList = new List<CheckResult>();
+            for (int i = 0; i < Results.Count; i++)
+            {
+                if ((Results[i].FailedCount ?? 0) > maxFailedCount &&
+                    Results[i].IsNotified != true &&
+                    Results[i].IsRestore != true)
+                {
+                    tempList.Add(Results[i]);
+                    Results[i].IsNotified = true;
+                }
+            }
+            return tempList.ToArray();
         }
 
         public CheckResult[] GetRestreTarget()
