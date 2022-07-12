@@ -7,11 +7,11 @@ namespace PingMonitor
 {
     public class CheckResultCollection
     {
-        private List<CheckResult> _list { get; set; }
+        public List<CheckResult> Results { get; set; }
 
         public void Init()
         {
-            this._list = new();
+            this.Results = new();
         }
 
         #region load/save
@@ -34,6 +34,7 @@ namespace PingMonitor
             if (collection == null)
             {
                 collection = new();
+                collection.Init();
             }
             return collection;
         }
@@ -45,37 +46,38 @@ namespace PingMonitor
                 string parent = System.IO.Path.GetDirectoryName(dbFile);
                 if (System.IO.Directory.Exists(parent)) System.IO.Directory.CreateDirectory(parent);
 
-                System.Text.Json.JsonSerializer.Serialize(this, new System.Text.Json.JsonSerializerOptions()
+                string json = System.Text.Json.JsonSerializer.Serialize(this, new System.Text.Json.JsonSerializerOptions()
                 {
                     DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
                     WriteIndented = true,
                 });
+                File.WriteAllText(dbFile, json);
             }
             catch { }
         }
 
         #endregion
 
-        public void SuccessTarget(string target)
+        public void AddSuccessTarget(string target)
         {
-            var index = this._list.FindIndex(x => x.Target == target);
+            var index = this.Results.FindIndex(x => x.Target == target);
             if (index >= 0)
             {
-                _list[index].IsRestore = true;
+                Results[index].IsRestore = true;
             }
         }
 
-        public void FailTarget(string target)
+        public void AddFailTarget(string target)
         {
-            var index = this._list.FindIndex(x => x.Target == target);
+            var index = this.Results.FindIndex(x => x.Target == target);
             if (index >= 0)
             {
-                _list[index].LastCheckTime = DateTime.Now;
-                _list[index].FailedCount++;
+                Results[index].LastCheckTime = DateTime.Now;
+                Results[index].FailedCount++;
             }
             else
             {
-                _list.Add(new CheckResult()
+                Results.Add(new CheckResult()
                 {
                     Target = target,
                     LastCheckTime = DateTime.Now,
@@ -86,7 +88,7 @@ namespace PingMonitor
 
         public CheckResult[] GetAlertTarget(int maxFailedCount)
         {
-            return _list.Where(x =>
+            return Results.Where(x =>
                 (x.FailedCount ?? 0) > maxFailedCount &&
                 (x.IsNotified != true) &&
                 (x.IsRestore != true)).
@@ -96,12 +98,12 @@ namespace PingMonitor
         public CheckResult[] GetRestreTarget()
         {
             var tempList = new List<CheckResult>();
-            for (int i = _list.Count - 1; i <= 0; i--)
+            for (int i = Results.Count - 1; i >= 0; i--)
             {
-                if (_list[i].IsRestore ?? false)
+                if (Results[i].IsRestore ?? false)
                 {
-                    tempList.Add(_list[i]);
-                    _list.RemoveAt(i);
+                    tempList.Add(Results[i]);
+                    Results.RemoveAt(i);
                 }
             }
             tempList.Reverse();

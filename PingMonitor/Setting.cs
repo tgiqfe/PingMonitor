@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PingMonitor
 {
@@ -46,7 +44,10 @@ namespace PingMonitor
                 using (var reader = new StringReader(stream.ReadToEnd()))
                 {
                     var ret = new Setting();
-                    var props = typeof(Setting).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    var props = typeof(Setting).GetProperties(
+                        System.Reflection.BindingFlags.Instance | 
+                        System.Reflection.BindingFlags.Public | 
+                        System.Reflection.BindingFlags.DeclaredOnly);
                     string readLine = "";
                     while ((readLine = reader.ReadLine()) != null)
                     {
@@ -102,7 +103,10 @@ namespace PingMonitor
             {
                 using (var stream = new StreamWriter(settingFile, false, System.Text.Encoding.UTF8))
                 {
-                    var props = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    var props = this.GetType().GetProperties(
+                        System.Reflection.BindingFlags.Instance | 
+                        System.Reflection.BindingFlags.Public | 
+                        System.Reflection.BindingFlags.DeclaredOnly);
                     foreach (var prop in props)
                     {
                         var type = prop.PropertyType;

@@ -9,13 +9,13 @@ string json = System.Text.Json.JsonSerializer.Serialize(setting,
     });
 Console.WriteLine(json);
 
-Logger logger = new Logger(setting.LogsPath, "aaaa");
+Logger logger = new Logger(setting.LogsPath, "monitor");
 logger.Write("開始");
 logger.Write("テスト");
 
 
 var pinging = new Pinging(setting, logger);
-
+pinging.Check();
 
 
 

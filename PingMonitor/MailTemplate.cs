@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PingMonitor
@@ -16,7 +15,7 @@ namespace PingMonitor
             MailTemplate template = new();
             template.Subject = "[PingMonitor][Alert] Detects a server with no ping response.";
 
-            StringBuilder sb = new();
+            System.Text.StringBuilder sb = new();
             sb.AppendLine($"MonitorServer : {System.Environment.MachineName}");
             sb.AppendLine($"AlertTime     : {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
             sb.AppendLine();
@@ -45,7 +44,7 @@ namespace PingMonitor
             MailTemplate template = new();
             template.Subject = "[PingMonitor][Restore] Detects a server with a restored ping response.";
 
-            StringBuilder sb = new();
+            System.Text.StringBuilder sb = new();
             sb.AppendLine($"MonitorServer : {System.Environment.MachineName}");
             sb.AppendLine($"RestoreTime   : {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
             sb.AppendLine();
