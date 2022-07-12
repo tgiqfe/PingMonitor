@@ -12,6 +12,6 @@ namespace PingMonitor
         public DateTime LastCheckTime { get; set; }
         public int? FailedCount { get; set; }
         public bool? IsNotified { get; set; }
-        public bool? DeleteReserve { get; set; }
+        public bool? IsRestore { get; set; }
     }
 }

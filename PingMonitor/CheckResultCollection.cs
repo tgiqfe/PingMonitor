@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 
 namespace PingMonitor
 {
-    public class ResultCollection
+    public class CheckResultCollection
     {
-        public List<CheckResult> List { get; set; }
+        private List<CheckResult> _list { get; set; }
 
         public void Init()
         {
-            this.List = new();
+            this._list = new();
         }
 
         #region load/save
 
-        public static ResultCollection Load(string dbFile)
+        public static CheckResultCollection Load(string dbFile)
         {
-            ResultCollection collection = null;
+            CheckResultCollection collection = null;
             try
             {
-                collection = System.Text.Json.JsonSerializer.Deserialize<ResultCollection>(
+                collection = System.Text.Json.JsonSerializer.Deserialize<CheckResultCollection>(
                     File.ReadAllText(dbFile),
                     new System.Text.Json.JsonSerializerOptions()
                     {
@@ -58,30 +58,54 @@ namespace PingMonitor
 
         public void SuccessTarget(string target)
         {
-            var index = this.List.FindIndex(x => x.Target == target);
+            var index = this._list.FindIndex(x => x.Target == target);
             if (index >= 0)
             {
-                List[index].DeleteReserve = true;
+                _list[index].IsRestore = true;
             }
         }
 
         public void FailTarget(string target)
         {
-            var index = this.List.FindIndex(x => x.Target == target);
+            var index = this._list.FindIndex(x => x.Target == target);
             if (index >= 0)
             {
-                List[index].LastCheckTime = DateTime.Now;
-                List[index].FailedCount++;
+                _list[index].LastCheckTime = DateTime.Now;
+                _list[index].FailedCount++;
             }
             else
             {
-                List.Add(new CheckResult()
+                _list.Add(new CheckResult()
                 {
                     Target = target,
                     LastCheckTime = DateTime.Now,
                     FailedCount = 1,
                 });
             }
+        }
+
+        public CheckResult[] GetAlertTarget(int maxFailedCount)
+        {
+            return _list.Where(x =>
+                (x.FailedCount ?? 0) > maxFailedCount &&
+                (x.IsNotified != true) &&
+                (x.IsRestore != true)).
+                ToArray();
+        }
+
+        public CheckResult[] GetRestreTarget()
+        {
+            var tempList = new List<CheckResult>();
+            for (int i = _list.Count - 1; i <= 0; i--)
+            {
+                if (_list[i].IsRestore ?? false)
+                {
+                    tempList.Add(_list[i]);
+                    _list.RemoveAt(i);
+                }
+            }
+            tempList.Reverse();
+            return tempList.ToArray();
         }
     }
 }

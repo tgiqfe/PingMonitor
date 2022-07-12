@@ -13,7 +13,7 @@ namespace PingMonitor
         private Logger _logger = null;
 
         private List<string> _list = null;
-        private ResultCollection _collection = null;
+        private CheckResultCollection _collection = null;
 
         public Pinging(Setting setting, Logger logger)
         {
@@ -52,7 +52,7 @@ namespace PingMonitor
         private void LoadResultCollection(string logsPath)
         {
             string dbFile = System.IO.Path.Combine(logsPath, "results.json");
-            _collection = ResultCollection.Load(dbFile);
+            _collection = CheckResultCollection.Load(dbFile);
         }
 
         private void SendPing(int interval, int count)
@@ -85,7 +85,20 @@ namespace PingMonitor
                 To = toAddress,
                 From = fromAddress,
             };
-            
+
+            var alertTargets = _collection.GetAlertTarget(_setting.MaxFailedCount ?? 5);
+            if (alertTargets?.Length > 0)
+            {
+                var template = MailTemplate.CreateAlertMail(alertTargets);
+                mail.Send(template.Subject, template.Body);
+            }
+
+            var restoreTargets = _collection.GetRestreTarget();
+            if (restoreTargets?.Length > 0)
+            {
+                var template = MailTemplate.CreateRestoreMail(restoreTargets);
+                mail.Send(template.Subject, template.Body);
+            }
         }
     }
 }
