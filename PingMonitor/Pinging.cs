@@ -144,13 +144,19 @@ namespace PingMonitor
                 {
                     _logger.Write("Start send alert mail process.");
                     var template = MailTemplate.CreateAlertMail(alertTargets);
-                    mail.Send(template.Subject, template.Body);
+                    //mail.Send(template.Subject, template.Body);
+                    mail.Subject = template.Subject;
+                    mail.Body = template.Body;
+                    mail.Send();
                 }
                 if (restoreTargets?.Length > 0)
                 {
                     _logger.Write("Start send restore mail process.");
                     var template = MailTemplate.CreateRestoreMail(restoreTargets);
-                    mail.Send(template.Subject, template.Body);
+                    //mail.Send(template.Subject, template.Body);
+                    mail.Subject = template.Subject;
+                    mail.Body = template.Body;
+                    mail.Send();
                 }
 
             }
