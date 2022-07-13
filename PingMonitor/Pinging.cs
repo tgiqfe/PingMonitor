@@ -138,17 +138,26 @@ namespace PingMonitor
                     $"  From : {fromAddress}");
             }
 
-            if (alertTargets?.Length > 0)
+            try
             {
-                _logger.Write("Start send alert mail process.");
-                var template = MailTemplate.CreateAlertMail(alertTargets);
-                mail.Send(template.Subject, template.Body);
+                if (alertTargets?.Length > 0)
+                {
+                    _logger.Write("Start send alert mail process.");
+                    var template = MailTemplate.CreateAlertMail(alertTargets);
+                    mail.Send(template.Subject, template.Body);
+                }
+                if (restoreTargets?.Length > 0)
+                {
+                    _logger.Write("Start send restore mail process.");
+                    var template = MailTemplate.CreateRestoreMail(restoreTargets);
+                    mail.Send(template.Subject, template.Body);
+                }
+
             }
-            if (restoreTargets?.Length > 0)
+            catch (Exception e)
             {
-                _logger.Write("Start send restore mail process.");
-                var template = MailTemplate.CreateRestoreMail(restoreTargets);
-                mail.Send(template.Subject, template.Body);
+                _logger.Write(LogLevel.Error, "Email sending failed.");
+                _logger.Write(LogLevel.Debug, e.ToString());
             }
         }
 
