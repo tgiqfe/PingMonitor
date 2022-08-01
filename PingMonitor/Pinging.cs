@@ -7,20 +7,6 @@ namespace PingMonitor
 {
     public class Pinging
     {
-        private Setting _setting2 = null;
-        private Logger _logger2 = null;
-
-        private List<string> _list2 = null;
-        private CheckResultCollection _collection2 = null;
-
-
-
-
-
-
-
-
-
         private static bool _enabled = false;
         private static Setting _setting = null;
         private static Logger _logger = null;
@@ -123,12 +109,12 @@ namespace PingMonitor
                 if (ret)
                 {
                     _logger.Write(LogLevel.Info, $"Ping success: {target}");
-                    _collection.AddSuccess(target);
+                    _collection.AddSuccess("Ping", target);
                 }
                 else
                 {
                     _logger.Write(LogLevel.Warn, $"Ping failed: {target}");
-                    _collection.AddFailed(target);
+                    _collection.AddFailed("Ping", target);
                 }
             }
         }
@@ -238,6 +224,26 @@ namespace PingMonitor
         }
         */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
         private void SendMail(string smtpServer, int port, string[] toAddress, string fromAddress)
         {
             _logger2.Write("Send mail if alert or restore occures.");
@@ -300,5 +306,6 @@ namespace PingMonitor
             _logger2.Write(LogLevel.Debug, $"Result collection file: {dbFile}");
             _logger2.Write($"Result collection count: {_collection2.Results.Count}");
         }
+        */
     }
 }

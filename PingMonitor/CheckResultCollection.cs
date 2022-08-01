@@ -97,36 +97,35 @@ namespace PingMonitor
             }
         }
 
-        public CheckResult[] GetAlert(int maxFailedCount)
+        public CheckResult[] GetAlert(string monitor)
         {
             var tempList = new List<CheckResult>();
             for (int i = 0; i < Results.Count; i++)
             {
-                /*
-                if ((Results[i].FailedCount ?? 0) > maxFailedCount &&
-                    Results[i].IsNotified != true &&
-                    Results[i].IsRestore != true)
+                if (Results[i].Monitor == monitor &&
+                    (Results[i].FailedCount ?? 0) > this.MaxFailedCount &&
+                    Results[i].IsNotified != true)
                 {
                     tempList.Add(Results[i]);
                     Results[i].IsNotified = true;
                 }
-                */
             }
+
             return tempList.ToArray();
         }
 
-        public CheckResult[] GetRestre()
+        public CheckResult[] GetRestre(string monitor)
         {
             var tempList = new List<CheckResult>();
             for (int i = Results.Count - 1; i >= 0; i--)
             {
-                /*
-                if (Results[i].IsRestore ?? false)
+                if (Results[i].Monitor == monitor &&
+                    (Results[i].RestoreCount ?? 0) > this.MinRestoreCount &&
+                    Results[i].IsNotified == true)
                 {
                     tempList.Add(Results[i]);
                     Results.RemoveAt(i);
                 }
-                */
             }
             tempList.Reverse();
             return tempList.ToArray();
