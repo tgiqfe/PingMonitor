@@ -29,8 +29,8 @@ string json = JsonSerializer.Serialize(setting,
 
 Pinging.Prepare(setting);
 Pinging.LoadListFile();
-
-
+Pinging.LoadResultCollection();
+Pinging.SendPing();
 
 
 

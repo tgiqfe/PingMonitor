@@ -11,7 +11,7 @@ namespace PingMonitor
         private Logger _logger2 = null;
 
         private List<string> _list2 = null;
-        private CheckResultCollection _collection = null;
+        private CheckResultCollection _collection2 = null;
 
 
 
@@ -25,6 +25,7 @@ namespace PingMonitor
         private static Setting _setting = null;
         private static Logger _logger = null;
         private static List<string> _list = null;
+        private static CheckResultCollection _collection = null;
 
         public static void Prepare(Setting setting)
         {
@@ -81,8 +82,56 @@ namespace PingMonitor
                 string.Join("\r\n", _list.Select(x => "  - " + x)));
         }
 
+        public static void LoadResultCollection()
+        {
+            if (!_enabled) return;
 
+            _logger.Write("Load result collection file.");
 
+            string dbFile = System.IO.Path.Combine(_setting.LogsPath, "results.json");
+            _collection = CheckResultCollection.Load(dbFile);
+            _collection.MaxFailedCount = _setting.Ping.MaxFailedCount ?? 5;
+            _collection.MinRestoreCount = _setting.Ping.MinRestoreCount ?? 0;
+
+            _logger.Write(LogLevel.Debug, $"Result collection file: {dbFile}");
+            _logger.Write($"Result collection count: {_collection.Results.Count}");
+        }
+
+        public static void SendPing()
+        {
+            if (!_enabled) return;
+
+            _logger.Write("Send ping and reply check.");
+
+            System.Net.NetworkInformation.Ping ping = new();
+
+            foreach (string target in _list)
+            {
+                _logger.Write($"Ping send: {target}");
+
+                bool ret = false;
+                for (int i = 0; i < (_setting.Ping.Count ?? 5); i++)
+                {
+                    System.Net.NetworkInformation.PingReply reply = ping.Send(target);
+                    if (reply.Status == System.Net.NetworkInformation.IPStatus.Success)
+                    {
+                        ret = true;
+                        break;
+                    }
+                    System.Threading.Thread.Sleep(_setting.Ping.Interval ?? 1000);
+                }
+                if (ret)
+                {
+                    _logger.Write(LogLevel.Info, $"Ping success: {target}");
+                    _collection.AddSuccess(target);
+                }
+                else
+                {
+                    _logger.Write(LogLevel.Warn, $"Ping failed: {target}");
+                    _collection.AddFailed(target);
+                }
+            }
+        }
 
 
 
@@ -140,6 +189,7 @@ namespace PingMonitor
         }
         */
 
+        /*
         private void LoadResultCollection(string logsPath)
         {
             _logger2.Write("Load result collection file.");
@@ -150,7 +200,9 @@ namespace PingMonitor
             _logger2.Write(LogLevel.Debug, $"Result collection file: {dbFile}");
             _logger2.Write($"Result collection count: {_collection.Results.Count}");
         }
+        */
 
+        /*
         private void SendPing(int interval, int count)
         {
             _logger2.Write("Send ping and reply check.");
@@ -175,15 +227,16 @@ namespace PingMonitor
                 if (ret)
                 {
                     _logger2.Write(LogLevel.Info, $"Ping success: {target}");
-                    _collection.AddSuccessTarget(target);
+                    _collection2.AddSuccessTarget(target);
                 }
                 else
                 {
                     _logger2.Write(LogLevel.Warn, $"Ping failed: {target}");
-                    _collection.AddFailTarget(target);
+                    _collection2.AddFailTarget(target);
                 }
             }
         }
+        */
 
         private void SendMail(string smtpServer, int port, string[] toAddress, string fromAddress)
         {
@@ -197,8 +250,8 @@ namespace PingMonitor
                 From = fromAddress,
             };
 
-            var alertTargets = _collection.GetAlertTarget(_setting2.Ping.MaxFailedCount ?? 5);
-            var restoreTargets = _collection.GetRestreTarget();
+            var alertTargets = _collection2.GetAlert(_setting2.Ping.MaxFailedCount ?? 5);
+            var restoreTargets = _collection2.GetRestre();
             if (alertTargets?.Length > 0 || restoreTargets?.Length > 0)
             {
                 _logger2.Write(LogLevel.Debug, "Send mail parameter:\r\n" +
@@ -242,10 +295,10 @@ namespace PingMonitor
             _logger2.Write("Save result collection file.");
 
             string dbFile = System.IO.Path.Combine(logsPath, "results.json");
-            _collection.Save(dbFile);
+            _collection2.Save(dbFile);
 
             _logger2.Write(LogLevel.Debug, $"Result collection file: {dbFile}");
-            _logger2.Write($"Result collection count: {_collection.Results.Count}");
+            _logger2.Write($"Result collection count: {_collection2.Results.Count}");
         }
     }
 }
