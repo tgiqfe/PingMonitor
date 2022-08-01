@@ -17,11 +17,17 @@ namespace PingMonitor
             "", "0", "-", "false", "fals", "no", "not", "none", "non", "empty", "null", "否", "不", "無", "dis", "disable", "disabled"
         };
 
+        private static System.Text.RegularExpressions.Regex _pattern_comment = new System.Text.RegularExpressions.Regex(@"(?<=^([^'""]*([^'""]*['""]){2})*[^'""]*)#.*$");
+
         public void Load(TextSeeker seeker)
         {
             string line = "";
             while ((line = seeker.ReadLine()) != null)
             {
+                if (_pattern_comment.IsMatch(line))
+                {
+                    line = _pattern_comment.Replace(line, "");
+                }
                 if (line.Contains(":"))
                 {
                     var indent = System.Text.RegularExpressions.Regex.Match(line, @"^\s*").Value;
@@ -82,7 +88,7 @@ namespace PingMonitor
         protected Logger _logger = null;
         protected string _logsPath = null;
         protected List<string> _list = null;
-        
+
         public void Prepare(Logger logger, string logsPath)
         {
             this._logger = logger;

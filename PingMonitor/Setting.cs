@@ -8,6 +8,7 @@ namespace PingMonitor
     public class Setting : SettingBase
     {
         public string LogsPath { get; set; }
+        public int? RetentionPeriod { get; set; }
         public PingSetting Ping { get; set; }
         public MailSetting Mail { get; set; }
 

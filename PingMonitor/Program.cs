@@ -27,7 +27,18 @@ string json = JsonSerializer.Serialize(setting,
         WriteIndented = true,
     });
 
+Pinging.Prepare(setting);
+Pinging.LoadListFile();
+
+
+
+
+
+
 Console.WriteLine(json);
+
+
+
 
 
 
