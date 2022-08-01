@@ -5,10 +5,16 @@ using System.Threading.Tasks;
 
 namespace PingMonitor
 {
-    public class Setting
+    public class Setting : SettingBase
     {
-        public string ListPath { get; set; }
         public string LogsPath { get; set; }
+        public PingSetting Ping { get; set; }
+        public MailSetting Mail { get; set; }
+
+
+        /*
+        public string ListPath { get; set; }
+        
         public int? PingInterval { get; set; }
         public int? PingCount { get; set; }
         public int? MaxFailedCount { get; set; }
@@ -130,5 +136,6 @@ namespace PingMonitor
             }
             catch { }
         }
+        */
     }
 }

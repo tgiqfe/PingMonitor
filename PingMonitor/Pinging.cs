@@ -6,6 +6,7 @@ using System.IO;
 
 namespace PingMonitor
 {
+    /*
     public class Pinging
     {
         private Setting _setting = null;
@@ -178,4 +179,5 @@ namespace PingMonitor
             _logger.Write($"Result collection count: {_collection.Results.Count}");
         }
     }
+    */
 }
