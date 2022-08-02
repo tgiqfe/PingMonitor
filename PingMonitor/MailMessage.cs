@@ -4,7 +4,7 @@ namespace PingMonitor
 {
     public class MailMessage
     {
-        public string Server { get; set; }
+        public string SmtpServer { get; set; }
         public int Port { get; set; }
         public string[] To { get; set; }
         public string From { get; set; }
@@ -94,7 +94,7 @@ namespace PingMonitor
 
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                client.Connect(this.Server, this.Port, MailKit.Security.SecureSocketOptions.None);
+                client.Connect(this.SmtpServer, this.Port, MailKit.Security.SecureSocketOptions.None);
                 client.Send(msg);
                 client.Disconnect(true);
             }

@@ -97,7 +97,7 @@ namespace PingMonitor
             }
         }
 
-        public CheckResult[] GetAlert(string monitor)
+        public CheckResult[] GetFailedAlert(string monitor)
         {
             var tempList = new List<CheckResult>();
             for (int i = 0; i < Results.Count; i++)
@@ -114,7 +114,7 @@ namespace PingMonitor
             return tempList.ToArray();
         }
 
-        public CheckResult[] GetRestre(string monitor)
+        public CheckResult[] GetRestoreAlert(string monitor)
         {
             var tempList = new List<CheckResult>();
             for (int i = Results.Count - 1; i >= 0; i--)

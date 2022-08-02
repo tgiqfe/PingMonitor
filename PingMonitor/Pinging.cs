@@ -7,6 +7,8 @@ namespace PingMonitor
 {
     public class Pinging
     {
+        const string MONITOR_NAME = "Ping";
+
         private static bool _enabled = false;
         private static Setting _setting = null;
         private static Logger _logger = null;
@@ -109,15 +111,129 @@ namespace PingMonitor
                 if (ret)
                 {
                     _logger.Write(LogLevel.Info, $"Ping success: {target}");
-                    _collection.AddSuccess("Ping", target);
+                    _collection.AddSuccess(MONITOR_NAME, target);
                 }
                 else
                 {
                     _logger.Write(LogLevel.Warn, $"Ping failed: {target}");
-                    _collection.AddFailed("Ping", target);
+                    _collection.AddFailed(MONITOR_NAME, target);
                 }
             }
         }
+
+        public void GetFailedAlert()
+        {
+            if (!_enabled) return;
+
+            _logger.Write("Send mail if alert or restore occures.");
+
+            var failedAlert = _collection.GetFailedAlert(MONITOR_NAME);
+            var restoreAlert = _collection.GetRestoreAlert(MONITOR_NAME);
+            if ((failedAlert?.Length > 0 || restoreAlert?.Length > 0) && _setting.Mail != null)
+            {
+                _logger.Write(LogLevel.Debug, "Send mail parameter:\r\n" +
+                    $"  SMTP : {_setting.Mail.SmtpServer}\r\n" +
+                    $"  Port : {_setting.Mail.Port}\r\n" +
+                    $"  To   : {string.Join(", ", _setting.Mail.To ?? new string[0] { })}\r\n" +
+                    $"  From : {_setting.Mail.From}");
+            }
+
+            if (failedAlert?.Length > 0)
+            {
+                _logger.Write("Send failed alert mail process.");
+
+                MailMessage message = new()
+                {
+                    SmtpServer = _setting.Mail.SmtpServer,
+                    Port = _setting.Mail.Port ?? 25,
+                    To = _setting.Mail.To,
+                    From = _setting.Mail.From,
+                    UserName = _setting.Mail.UserName,
+                    Password = _setting.Mail.Password,
+                };
+                message.Subject = "[PingMonitor][Alert] Detects a server with no ping response.";
+                message.Body = getBody(failedAlert);
+
+                string tempMessage = System.IO.Path.Combine(_setting.LogsPath, "tempMessage.json");
+                message.Save(tempMessage);
+                using (var proc = new System.Diagnostics.Process())
+                {
+                    proc.StartInfo.FileName = "MailTool.exe";
+                    proc.StartInfo.Arguments = tempMessage;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.Start();
+                    proc.WaitForExit();
+                }
+                System.IO.File.Delete(tempMessage);
+            }
+
+            if (restoreAlert?.Length > 0)
+            {
+                _logger.Write("Send restore alert mail process.");
+
+                MailMessage message = new()
+                {
+                    SmtpServer = _setting.Mail.SmtpServer,
+                    Port = _setting.Mail.Port ?? 25,
+                    To = _setting.Mail.To,
+                    From = _setting.Mail.From,
+                    UserName = _setting.Mail.UserName,
+                    Password = _setting.Mail.Password,
+                };
+                message.Subject = "[PingMonitor][Restore] Detects a server with a restored ping response.";
+                message.Body = getBody(restoreAlert);
+
+                string tempMessage = System.IO.Path.Combine(_setting.LogsPath, "tempMessage.json");
+                message.Save(tempMessage);
+                using (var proc = new System.Diagnostics.Process())
+                {
+                    proc.StartInfo.FileName = "MailTool.exe";
+                    proc.StartInfo.Arguments = tempMessage;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.Start();
+                    proc.WaitForExit();
+                }
+                System.IO.File.Delete(tempMessage);
+            }
+
+            string getBody(CheckResult[] results)
+            {
+                System.Text.StringBuilder sb = new();
+                sb.AppendLine($"MonitorServer : {System.Environment.MachineName}");
+                sb.AppendLine($"AlertTime     : {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}");
+                sb.AppendLine();
+
+                int maxTargetNameLength = results.Max(x => x.Target.Length);
+                int maxLastCheckTimeLength = "yyyy/MM/dd HH:mm:ss".Length;
+
+                sb.AppendLine(
+                    "Target".PadRight(maxTargetNameLength) + "  " +
+                    "LastCheckTime".PadRight(maxLastCheckTimeLength));
+                sb.AppendLine(new string('=', maxTargetNameLength + maxTargetNameLength + 3));
+                foreach (var res in results)
+                {
+                    sb.AppendLine(
+                        res.Target.PadRight(maxTargetNameLength) + "  " +
+                        res.LastCheckTime.ToString("yyyy/MM/dd HH:mm:ss").PadRight(maxLastCheckTimeLength));
+                }
+                return sb.ToString();
+            }
+        }
+
+
+        private static void SaveResultCollection()
+        {
+            _logger.Write("Save result collection file.");
+
+            string dbFile = System.IO.Path.Combine(_setting.LogsPath, "results.json");
+            _collection.Save(dbFile);
+
+            _logger.Write(LogLevel.Debug, $"Result collection file: {dbFile}");
+            _logger.Write($"Result collection count: {_collection.Results.Count}");
+        }
+
 
 
 
